@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc, cell::RefCell, fmt::Display};
+use std::{collections::HashMap, rc::Rc, cell::RefCell, fmt::Display, borrow::Cow};
 
 type Node = Rc<RefCell<DawgNode>>;
 
@@ -25,7 +25,7 @@ impl DawgWrapper {
         Self { next_id: 0 }
     }
 
-    pub fn create(&mut self) -> Node {
+    fn create(&mut self) -> Node {
         let node = DawgNode::new(self.next_id);
         self.next_id += 1;
         Rc::new(RefCell::new(node))
@@ -96,5 +96,37 @@ impl PartialOrd for DawgNode {
 impl PartialEq for DawgNode {
     fn eq(&self, other: &Self) -> bool {
         self.to_string() == other.to_string()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TriDawg {
+    parent: Node,
+    letter: String,
+    child: Node,
+}
+
+impl TriDawg {
+    fn new(parent: Node, letter: String, child: Node) -> Self {
+        Self { parent, letter, child, }
+    }
+}
+
+
+enum SearchReq {
+    Vertex,
+    Word,
+}
+
+
+#[derive(Debug)]
+struct SearchRes<'a> {
+    node: Node,
+    word: Cow<'a, str>
+}
+
+impl<'a> SearchRes<'a> {
+    pub fn new(node: Node, word: Cow<'a, str>) -> Self {
+        Self { node, word }
     }
 }
