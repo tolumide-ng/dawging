@@ -2,13 +2,11 @@ use std::{collections::HashMap, rc::Rc, cell::RefCell, cmp};
 
 use crate::utils::Utils;
 
-use super::{common::{NodeType, Wrapper, DawgNode, Dawg, TriDawg, SearchReq, SearchRes}};
-
-
+use crate::dawg::common::{NodeType, Wrapper, DawgNode, Dawg, TriDawg, SearchReq, SearchRes};
 /// Wrapper for DawgNode to persist the next_id of the DawgNode that would be added to the Dawg
 #[derive(Debug, Clone)]
-pub(crate) struct DawgWrapper {
-    next_id: usize,
+struct DawgWrapper {
+    pub(crate) next_id: usize,
 }
 
 impl Wrapper for DawgWrapper {
@@ -37,7 +35,7 @@ impl<T> Dawg<T> where T: Wrapper {
         }
     }
 
-    pub fn minimize(&mut self, down_to: usize) {
+    fn minimize(&mut self, down_to: usize) {
         let mut start = self.unchecked_nodes.len() as i8 - 1;
         let end = down_to as i8 - 1;
 

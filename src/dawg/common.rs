@@ -169,37 +169,3 @@ pub struct Dawg<T: Wrapper> {
     pub(crate) unchecked_nodes: Vec<TriDawg>,
     pub(crate) previous_word: String,
 }
-
-
-#[derive(Debug, Clone)]
-pub(crate) struct DawgWrapper {
-    next_id: usize,
-}
-
-impl Wrapper for DawgWrapper {
-    fn new() -> Self {
-        Self { next_id: 0 }
-    }
-
-    fn create(&mut self) -> NodeType {
-        let node = DawgNode::new(self.next_id);
-        self.next_id += 1;
-        NodeType::Unsync(Rc::new(RefCell::new(node)))
-    }
-}
-
-
-
-// impl<D> Dawg<D> where D: Wrapper {
-//     fn make() -> Self {
-//         let mut dawg_wrapper = DawgWrapper::new();
-//         // let result = dawg_wrapper.create();
-//         Self {
-//             root: dawg_wrapper.create(),
-//             minimized_nodes: HashMap::new(),
-//             unchecked_nodes: vec![],
-//             previous_word: String::from(""),
-//             node: dawg_wrapper,
-//         }
-//     }
-// }
