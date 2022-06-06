@@ -30,9 +30,9 @@ pub struct DawgNode {
     /// id of the node
     pub(crate) id: usize,
     /// value is true if this node is the end of a word
-    pub(crate) terminal: bool,
+    pub terminal: bool,
     /// Returns all the other nodes (e.g, letters) extending from this node (letter)
-    pub(crate) edges: HashMap<String, NodeType>,
+    pub edges: HashMap<String, NodeType>,
     /// returns the number of words so far that have been formed from the root of the dawg up to this node
     pub(crate) count: usize,
 }

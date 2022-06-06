@@ -115,11 +115,48 @@ impl<T> Dawg<T> where T: Wrapper {
             let keys = node.as_ref().lock().unwrap().borrow().edges.keys().collect::<Vec<_>>().iter().map(|x| x.to_string()).collect::<Vec<_>>();
 
             match case_sensitive {
-                true => {}
-                false => {}
+                true => {
+                    if keys.contains(&letter) {
+                        let next_node = Arc::clone(node.as_ref().lock().unwrap().borrow().edges[&letter].get_sync().unwrap());
+                        node = next_node;
+                    } else {
+                        return None;
+                    }
+                }
+                false => {
+                    let modified_keys = keys.iter().map(|x| x.to_uppercase()).collect::<Vec<_>>();
+                    let letter = letter.to_uppercase();
+
+                    if let Some(index) = modified_keys.iter().position(|x| x == &letter) {
+                        let actual_key = keys[index].to_owned();
+                        let next_node = Arc::clone(&node.as_ref().lock().unwrap().borrow().edges[&actual_key].get_sync().unwrap());
+                        node = next_node;
+                    } else {
+                        return None;
+                    }
+                }    
             }
         }
 
         return Some(SearchRes::new(node, word.to_owned()))
+    }
+
+
+    pub fn is_word_sync(&self, word: String, case_sensitive: bool) -> Option<String> {
+        if let Some(context) = self.find_sync(&word, SearchReq::Word, case_sensitive) {
+            if context.node.as_ref().lock().unwrap().terminal {
+                return Some(context.word);
+            }
+        }
+        None
+    }
+
+    pub fn lookup_sync(&self, word: String, case_sensitive: bool) -> Option<Arc<Mutex<DawgNode>>> {
+        if let Some(context) = self.find_sync(&word, SearchReq::Vertex, case_sensitive) {
+            if context.node.as_ref().lock().unwrap().terminal {
+                return Some(context.node)
+            }
+        }
+        None
     }
 }
